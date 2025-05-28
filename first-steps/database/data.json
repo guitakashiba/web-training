@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "DaleDolyHoe",
+    "age": 100,
+    "power": "Ancient"
+  },
+  {
+    "id": 2,
+    "name": "Starlady",
+    "age": 28,
+    "power": "Cosmic"
+  },
+  {
+    "id": 3,
+    "name": "ShadowFang",
+    "age": 35,
+    "power": "Stealth"
+  },
+  {
+    "id": 4,
+    "name": "ElectroBolt",
+    "age": 22,
+    "power": "Electric"
+  },
+  {
+    "id": 5,
+    "name": "IronClad",
+    "age": 40,
+    "power": "Invulnerability"
+  }
+]
