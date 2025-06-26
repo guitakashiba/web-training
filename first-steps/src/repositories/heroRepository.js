@@ -13,7 +13,11 @@ class HeroRepository{
         const all = await this._currentFileContent()
         if(!itemId) return all;
 
-        return all.find(({id}) => itemId === id)
+        const searchId = typeof itemId === 'string'
+        ? parseInt(itemId, 10)
+        : itemId;
+
+        return all.find(({id}) => id === searchId)
     }
 
     async create(data){
