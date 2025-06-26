@@ -6,7 +6,8 @@ class HeroRepository{
     }
 
     async _currentFileContent(){
-        return JSON.parse(await readFile(this.file))
+        const text = await readFile(this.file, 'utf-8')
+        return JSON.parse(text)
     }
 
     async find(itemId){
@@ -28,26 +29,39 @@ class HeroRepository{
     }
 
     async delete(itemId){
-        const all = this._currentFileContent()
-        const index = all.find(({id}) => id === itemId)
-        if(index === -1) return null
+        const all = await this._currentFileContent();
+        if(!Array.isArray(all)){
+            throw new Error(`Expected data.json to be an array but go ${typeof all}`)
+        }
 
-        const [deleteItem] = all.splice(index, 1);
+        const id = typeof itemId === 'string' ? parseInt(itemId, 10) : itemId
+
+        const idx = all.findIndex(h => h.id === id)
+        if(idx === -1) return null
+
+        const [deleted] = all.splice(idx, 1);
+
         await writeFile(this.file, JSON.stringify(all, null, 2))
         
-        return deleteItem
+        return deleted
     }
 
     async update(itemId, newData){
-        const all = this._currentFileContent()
-        const index = all.find(({id}) => id === itemId)
-        if(index === -1) return null
+        const all = await this._currentFileContent();
+        if(!Array.isArray(all)){
+            throw new Error(`Expected data.json to be an array but go ${typeof all}`)
+        }
 
-        const existing = all[index]
+        const id = typeof itemId === 'string' ? parseInt(itemId, 10) : itemId
+
+        const idx = all.findIndex(h => h.id === id)
+        if(idx === -1) return null
+        
+        const existing = all[idx]
         const updated = {...existing, ...newData}
-        all[index] = updated
+        all[idx] = updated
 
-        await writeFile(this.file, JSON.stringify(all, null, 2))
+        await writeFile(this.file, JSON.stringify(all, null, 2), 'utf-8')
 
         return updated
     }
