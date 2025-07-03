@@ -17,9 +17,10 @@ exports.getAllHeroes = async (req, res, next) => {
 
 // GET /heroes/:id
 exports.getHeroById = async (req, res, next) => {
+    console.log('-> getHeroById:', req.params.id);
     try {
         const id = parseInt(req.params.id, 10);
-        const hero = await repo.find(id);
+        const hero = await repo.findOne(id);
         if (!hero) return res.status(404).json({ error: 'Hero not found' });
         res.json(hero);
     } catch (err) {

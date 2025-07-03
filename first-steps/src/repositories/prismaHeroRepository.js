@@ -8,7 +8,7 @@ class PrismaHeroRepository{
     }
 
     // GET one hero
-    async findONe(id){
+    async findOne(id){
         return prisma.hero.findUnique(
             {
                 where: {id}
