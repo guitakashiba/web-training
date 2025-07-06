@@ -8,7 +8,7 @@ const repo = new PrismaHeroRepository();
 // GET /heroes
 exports.getAllHeroes = async (req, res, next) => {
     try {
-        const heroes = await repo.find();
+        const heroes = await repo.findAllByUser(req.userId);
         res.json(heroes);
     } catch (err) {
         next(err);
@@ -17,11 +17,13 @@ exports.getAllHeroes = async (req, res, next) => {
 
 // GET /heroes/:id
 exports.getHeroById = async (req, res, next) => {
-    console.log('-> getHeroById:', req.params.id);
     try {
         const id = parseInt(req.params.id, 10);
         const hero = await repo.findOne(id);
         if (!hero) return res.status(404).json({ error: 'Hero not found' });
+        if (hero.userId !== req.userId) {
+            return res.status(403).json({ error: 'Not authorized to view this hero' });
+        }
         res.json(hero);
     } catch (err) {
         next(err);
@@ -32,15 +34,12 @@ exports.getHeroById = async (req, res, next) => {
 exports.createHero = async (req, res, next) => {
     try {
         const { name, age, power } = req.body;
-
-        if (!name || age == null || !power) {
-            return res
-                .status(400)
-                .json({ error: 'name, age and power are all required' });
-        }
-
-        const newHero = await repo.create({ name, age, power });
-
+        const newHero = await repo.create({
+            name,
+            age,
+            power,
+            userId: req.userId     // stamp owner here
+        });
         res.status(201).json(newHero);
     } catch (err) {
         next(err);
@@ -51,8 +50,14 @@ exports.createHero = async (req, res, next) => {
 exports.updateHero = async (req, res, next) => {
     try {
         const id = parseInt(req.params.id, 10);
+        const existing = await repo.findOne(id);
+        if (!existing) {
+            return res.status(404).json({ error: 'Hero not found' });
+        }
+        if (existing.userId !== req.userId) {
+            return res.status(403).json({ error: 'Not authorized to modify this hero' });
+        }
         const updated = await repo.update(id, req.body);
-        if (!updated) return res.status(404).json({ error: 'Hero not found' });
         res.json(updated);
     } catch (err) {
         next(err);
@@ -63,13 +68,17 @@ exports.updateHero = async (req, res, next) => {
 exports.deleteHero = async (req, res, next) => {
     try {
         const id = parseInt(req.params.id, 10);
-        const deleted = await repo.delete(id);
-        // if (!deleted) return res.status(404).json({ error: 'Hero not found' });
-        // res.json({ message: 'Hero deleted', hero: deleted });
-        if (!deleted) {
+
+        const existing = await repo.findOne(id);
+        if (!existing) {
             return res.status(404).json({ error: 'Hero not found' });
         }
-        res.sendStatus(204);
+        if (existing.userId !== req.userId) {
+            return res.status(403).json({ error: 'Not authorized to delete this hero' });
+        }
+
+        await repo.delete(id);
+        return res.sendStatus(204);
     } catch (err) {
         next(err);
     }

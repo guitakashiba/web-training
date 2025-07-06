@@ -1,15 +1,14 @@
 const express = require('express');
 const cors = require('cors');
-const heroRoutes = require('./routes/heroRoutes');
-const authRoutes = require('./routes/authRoutes');
 const auth = require('./middleware/auth');
+const authRoutes = require('./routes/authRoutes');
+const heroRoutes = require('./routes/heroRoutes');
 
 const app = express();
 
-app.use(express.json());
-
-app.use(cors());
-app.use(express.json());
+// Middleware
+app.use(cors());           // Enable CORS
+app.use(express.json());   // Parse JSON bodies
 
 // Public auth endpoints
 app.use('/auth', authRoutes);
@@ -17,15 +16,17 @@ app.use('/auth', authRoutes);
 // Protected hero endpoints
 app.use('/heroes', auth, heroRoutes);
 
-// Global error handler
-app.use((err, req, res, next) => {
-    console.log(err);
-    res.status(500).json({error: 'Internal Server Error'});
+// Optional health check
+app.get('/', (_req, res) => {
+    res.send('🚀 Hero API is running');
 });
 
-// const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => 
-//     console.log(`API listening on https://localhost:${PORT}`)
-// );
+// Global error handler
+app.use((err, _req, res, _next) => {
+    console.error(err);
+    res
+        .status(err.status || 500)
+        .json({ error: err.message || 'Internal Server Error' });
+});
 
 module.exports = app;

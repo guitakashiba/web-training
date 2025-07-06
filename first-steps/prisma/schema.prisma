@@ -14,10 +14,13 @@ model Hero {
   name   String
   age    Int
   power  String
+  userId Int
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
   id       Int    @id @default(autoincrement())
   email    String @unique
   password String
+  heroes   Hero[]   // 1-to-many relation back to heroes
 }
