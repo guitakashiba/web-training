@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js"
+    "start": "node src/server.js",
+    "dev": "nodemon src/app.js",
+    "test": "jest --runInBand"
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",
@@ -15,7 +16,13 @@
     "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
+    "jest": "^30.0.4",
     "nodemon": "^2.0.22",
-    "prisma": "^6.10.1"
+    "prisma": "^6.10.1",
+    "supertest": "^7.1.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "roots": ["<rootDir>/__tests__"]
   }
 }

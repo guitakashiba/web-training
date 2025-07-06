@@ -23,7 +23,9 @@ app.use((err, req, res, next) => {
     res.status(500).json({error: 'Internal Server Error'});
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => 
-    console.log(`API listening on https://localhost:${PORT}`)
-);
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => 
+//     console.log(`API listening on https://localhost:${PORT}`)
+// );
+
+module.exports = app;

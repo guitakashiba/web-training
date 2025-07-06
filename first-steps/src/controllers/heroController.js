@@ -64,8 +64,12 @@ exports.deleteHero = async (req, res, next) => {
     try {
         const id = parseInt(req.params.id, 10);
         const deleted = await repo.delete(id);
-        if (!deleted) return res.status(404).json({ error: 'Hero not found' });
-        res.json({ message: 'Hero deleted', hero: deleted });
+        // if (!deleted) return res.status(404).json({ error: 'Hero not found' });
+        // res.json({ message: 'Hero deleted', hero: deleted });
+        if (!deleted) {
+            return res.status(404).json({ error: 'Hero not found' });
+        }
+        res.sendStatus(204);
     } catch (err) {
         next(err);
     }
