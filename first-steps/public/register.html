@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Hero Training</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 400px;
+            width: 100%;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .register-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .register-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .register-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .register-form {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #f093fb;
+            box-shadow: 0 0 0 3px rgba(240, 147, 251, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(240, 147, 251, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            position: relative;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            color: #f093fb;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #f5576c;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .password-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <h1>🌟 Join Us!</h1>
+            <p>Start your hero training journey today</p>
+        </div>
+        
+        <form class="register-form" id="registerForm">
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="your@email.com"
+                    required
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="••••••••"
+                    minlength="6"
+                    required
+                >
+                <div class="password-hint">At least 6 characters</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input 
+                    type="password" 
+                    id="confirmPassword" 
+                    name="confirmPassword" 
+                    placeholder="••••••••"
+                    minlength="6"
+                    required
+                >
+            </div>
+            
+            <button type="submit" class="btn">Create Account</button>
+            
+            <div class="divider">
+                <span>or</span>
+            </div>
+            
+            <div class="login-link">
+                Already have an account? <a href="login.html">Login</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('registerForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                errorMessage.textContent = 'Passwords do not match';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:3000/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    successMessage.textContent = 'Account created successfully! Redirecting to login...';
+                    successMessage.style.display = 'block';
+                    
+                    // Redirect to login page after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    errorMessage.textContent = data.error || 'Registration failed';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Connection error. Make sure the server is running.';
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

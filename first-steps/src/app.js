@@ -1,19 +1,40 @@
 const express = require('express');
 const cors = require('cors');
+const session = require('express-session');
+const auth = require('./middleware/auth');
+const authRoutes = require('./routes/authRoutes');
 const heroRoutes = require('./routes/heroRoutes');
 
 const app = express();
 
 // Middleware
-app.use(cors());           // Enable CORS
-app.use(express.json());   // Parse JSON bodies
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true  // IMPORTANT for sessions!
+}));
+app.use(express.json());
+app.use(express.static('public'));
 
-// Hero endpoints (sem autenticação)
-app.use('/heroes', heroRoutes);
+// Session middleware - SUPER SIMPLE!
+app.use(session({
+    secret: 'your-secret-key-change-in-production',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24, // 24 hours
+        httpOnly: true
+    }
+}));
+
+// Public auth endpoints
+app.use('/auth', authRoutes);
+
+// Protected hero endpoints
+app.use('/heroes', auth, heroRoutes);
 
 // Health check
 app.get('/', (_req, res) => {
-    res.send('🚀 Hero API is running (Development Mode - No Auth)');
+    res.redirect('/login.html');
 });
 
 // Global error handler

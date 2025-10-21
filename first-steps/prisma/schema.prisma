@@ -10,8 +10,17 @@ generator client {
 }
 
 model Hero {
-  id    Int    @id @default(autoincrement())
-  name  String
-  age   Int
-  power String
+  id     Int    @id @default(autoincrement())
+  name   String
+  age    Int
+  power  String
+  userId Int
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  email    String   @unique
+  password String
+  heroes   Hero[]
 }

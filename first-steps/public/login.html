@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Hero Training</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 400px;
+            width: 100%;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .login-form {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            position: relative;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .register-link a:hover {
+            color: #764ba2;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>🦸 Welcome Back!</h1>
+            <p>Login to continue your hero training</p>
+        </div>
+        
+        <form class="login-form" id="loginForm">
+            <div class="error-message" id="errorMessage"></div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="your@email.com"
+                    required
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="••••••••"
+                    required
+                >
+            </div>
+            
+            <button type="submit" class="btn" id="loginBtn">Login</button>
+            
+            <div class="divider">
+                <span>or</span>
+            </div>
+            
+            <div class="register-link">
+                Don't have an account? <a href="register.html">Sign up</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const loginBtn = document.getElementById('loginBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            errorMessage.style.display = 'none';
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+            
+            try {
+                const response = await fetch('http://localhost:3000/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include', // IMPORTANT for sessions!
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Redirect to dashboard
+                    window.location.href = 'dashboard.html';
+                } else {
+                    errorMessage.textContent = data.error || 'Invalid credentials';
+                    errorMessage.style.display = 'block';
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Login';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Connection error. Make sure the server is running.';
+                errorMessage.style.display = 'block';
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }
+        });
+    </script>
+</body>
+</html>

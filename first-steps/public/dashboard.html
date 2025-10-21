@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Hero Training</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content h1 {
+            color: #333;
+            font-size: 32px;
+        }
+
+        .header-content p {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .hero-section {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .add-hero-form {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-row input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-row input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .add-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .hero-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .hero-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .hero-card h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .hero-info {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .delete-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid white;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .delete-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <div class="header-content">
+                <h1>🦸 Hero Dashboard</h1>
+                <p id="userEmail">Loading...</p>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <div class="hero-section">
+            <h2>Your Heroes</h2>
+            
+            <div class="add-hero-form">
+                <div class="error-message" id="errorMessage"></div>
+                <form id="addHeroForm">
+                    <div class="form-row">
+                        <input type="text" id="heroName" placeholder="Hero Name" required>
+                        <input type="number" id="heroAge" placeholder="Age" required>
+                        <input type="text" id="heroPower" placeholder="Power" required>
+                        <button type="submit" class="add-btn">Add Hero</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="hero-list" id="heroList">
+                <div class="empty-state">
+                    <h3>No heroes yet</h3>
+                    <p>Add your first hero above!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const errorMessage = document.getElementById('errorMessage');
+        const heroList = document.getElementById('heroList');
+        const addHeroForm = document.getElementById('addHeroForm');
+        const userEmail = document.getElementById('userEmail');
+
+        // Check authentication on page load
+        checkAuth();
+
+        async function checkAuth() {
+            try {
+                const response = await fetch('http://localhost:3000/auth/check', {
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (!data.authenticated) {
+                    window.location.href = 'login.html';
+                } else {
+                    userEmail.textContent = data.email;
+                    loadHeroes();
+                }
+            } catch (error) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        addHeroForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('heroName').value;
+            const age = parseInt(document.getElementById('heroAge').value);
+            const power = document.getElementById('heroPower').value;
+            
+            errorMessage.style.display = 'none';
+            
+            try {
+                const response = await fetch('http://localhost:3000/heroes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ name, age, power })
+                });
+                
+                if (response.ok) {
+                    addHeroForm.reset();
+                    loadHeroes();
+                } else if (response.status === 401) {
+                    window.location.href = 'login.html';
+                } else {
+                    const data = await response.json();
+                    errorMessage.textContent = data.error || 'Failed to add hero';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Connection error';
+                errorMessage.style.display = 'block';
+            }
+        });
+
+        async function loadHeroes() {
+            try {
+                const response = await fetch('http://localhost:3000/heroes', {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const heroes = await response.json();
+                    displayHeroes(heroes);
+                } else if (response.status === 401) {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Error loading heroes:', error);
+            }
+        }
+
+        function displayHeroes(heroes) {
+            if (heroes.length === 0) {
+                heroList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No heroes yet</h3>
+                        <p>Add your first hero above!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            heroList.innerHTML = heroes.map(hero => `
+                <div class="hero-card">
+                    <h3>${hero.name}</h3>
+                    <div class="hero-info">
+                        <p>Age: ${hero.age}</p>
+                        <p>Power: ${hero.power}</p>
+                    </div>
+                    <button class="delete-btn" onclick="deleteHero(${hero.id})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        async function deleteHero(id) {
+            if (!confirm('Are you sure you want to delete this hero?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`http://localhost:3000/heroes/${id}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    loadHeroes();
+                } else if (response.status === 401) {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Error deleting hero:', error);
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('http://localhost:3000/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = 'login.html';
+            } catch (error) {
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>
