@@ -1,109 +1,94 @@
-const bcrypt = require('bcrypt');
 const request = require('supertest');
 const app = require('../src/app');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-let token;
-
-describe('Heroes Endpoints', () => {
+describe('Heroes Endpoints (No Auth)', () => {
     beforeAll(async () => {
-        // Reset tables and create User A
+        // Limpa apenas a tabela de heróis
         await prisma.hero.deleteMany();
-        await prisma.user.deleteMany();
-
-        await prisma.user.create({
-            data: {
-                email: 'hero@test.com',
-                password: await bcrypt.hash('pw', 10)
-            }
-        });
-
-        // Log in User A to get a token
-        const res = await request(app)
-            .post('/auth/login')
-            .send({ email: 'hero@test.com', password: 'pw' });
-        token = res.body.token;
     });
 
     afterAll(async () => {
         await prisma.$disconnect();
     });
 
-    it('should reject without token', async () => {
+    it('should get an empty hero list initially', async () => {
         const res = await request(app).get('/heroes');
-        expect(res.statusCode).toBe(401);
-    });
-
-    it('should get an empty hero list for User A', async () => {
-        const res = await request(app)
-            .get('/heroes')
-            .set('Authorization', `Bearer ${token}`);
         expect(res.statusCode).toBe(200);
         expect(res.body).toEqual([]);
     });
 
-    it('should create, update, and delete a hero', async () => {
-        // Create
-        let res = await request(app)
+    it('should create a new hero', async () => {
+        const res = await request(app)
             .post('/heroes')
-            .set('Authorization', `Bearer ${token}`)
             .send({ name: 'TestHero', age: 99, power: 'Testing' });
+        
         expect(res.statusCode).toBe(201);
-        const hero = res.body;
-
-        // Update
-        res = await request(app)
-            .put(`/heroes/${hero.id}`)
-            .set('Authorization', `Bearer ${token}`)
-            .send({ age: 100 });
-        expect(res.statusCode).toBe(200);
-        expect(res.body.age).toBe(100);
-
-        // Delete
-        res = await request(app)
-            .delete(`/heroes/${hero.id}`)
-            .set('Authorization', `Bearer ${token}`);
-        expect(res.statusCode).toBe(204);
+        expect(res.body).toHaveProperty('id');
+        expect(res.body.name).toBe('TestHero');
+        expect(res.body.age).toBe(99);
+        expect(res.body.power).toBe('Testing');
     });
 
-    describe('Ownership rules', () => {
-        let heroId;
-        let tokenB;
+    it('should get all heroes', async () => {
+        const res = await request(app).get('/heroes');
+        expect(res.statusCode).toBe(200);
+        expect(res.body.length).toBeGreaterThan(0);
+    });
 
-        beforeAll(async () => {
-            // User A creates a hero
-            const resCreate = await request(app)
-                .post('/heroes')
-                .set('Authorization', `Bearer ${token}`)
-                .send({ name: 'OwnedHero', age: 50, power: 'AuthTest' });
-            heroId = resCreate.body.id;
+    it('should get a hero by id', async () => {
+        // Cria um herói primeiro
+        const createRes = await request(app)
+            .post('/heroes')
+            .send({ name: 'GetTest', age: 50, power: 'Retrieval' });
+        
+        const heroId = createRes.body.id;
 
-            // Create and log in User B
-            await prisma.user.create({
-                data: {
-                    email: 'other@test.com',
-                    password: await bcrypt.hash('pw2', 10)
-                }
-            });
-            const resLoginB = await request(app)
-                .post('/auth/login')
-                .send({ email: 'other@test.com', password: 'pw2' });
-            tokenB = resLoginB.body.token;
-        });
+        // Busca o herói
+        const res = await request(app).get(`/heroes/${heroId}`);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.id).toBe(heroId);
+        expect(res.body.name).toBe('GetTest');
+    });
 
-        it('forbids a different user from deleting that hero', async () => {
-            const res = await request(app)
-                .delete(`/heroes/${heroId}`)
-                .set('Authorization', `Bearer ${tokenB}`);
-            expect(res.statusCode).toBe(403);
-        });
+    it('should update a hero', async () => {
+        // Cria um herói
+        const createRes = await request(app)
+            .post('/heroes')
+            .send({ name: 'UpdateTest', age: 30, power: 'Change' });
+        
+        const heroId = createRes.body.id;
 
-        it('allows the owner to delete their own hero', async () => {
-            const res = await request(app)
-                .delete(`/heroes/${heroId}`)
-                .set('Authorization', `Bearer ${token}`);
-            expect(res.statusCode).toBe(204);
-        });
+        // Atualiza o herói
+        const res = await request(app)
+            .put(`/heroes/${heroId}`)
+            .send({ age: 35 });
+        
+        expect(res.statusCode).toBe(200);
+        expect(res.body.age).toBe(35);
+        expect(res.body.name).toBe('UpdateTest');
+    });
+
+    it('should delete a hero', async () => {
+        // Cria um herói
+        const createRes = await request(app)
+            .post('/heroes')
+            .send({ name: 'DeleteTest', age: 40, power: 'Vanish' });
+        
+        const heroId = createRes.body.id;
+
+        // Deleta o herói
+        const res = await request(app).delete(`/heroes/${heroId}`);
+        expect(res.statusCode).toBe(204);
+
+        // Confirma que foi deletado
+        const getRes = await request(app).get(`/heroes/${heroId}`);
+        expect(getRes.statusCode).toBe(404);
+    });
+
+    it('should return 404 for non-existent hero', async () => {
+        const res = await request(app).get('/heroes/99999');
+        expect(res.statusCode).toBe(404);
     });
 });

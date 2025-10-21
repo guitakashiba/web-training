@@ -1,7 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const auth = require('./middleware/auth');
-const authRoutes = require('./routes/authRoutes');
 const heroRoutes = require('./routes/heroRoutes');
 
 const app = express();
@@ -10,15 +8,12 @@ const app = express();
 app.use(cors());           // Enable CORS
 app.use(express.json());   // Parse JSON bodies
 
-// Public auth endpoints
-app.use('/auth', authRoutes);
+// Hero endpoints (sem autenticação)
+app.use('/heroes', heroRoutes);
 
-// Protected hero endpoints
-app.use('/heroes', auth, heroRoutes);
-
-// Optional health check
+// Health check
 app.get('/', (_req, res) => {
-    res.send('🚀 Hero API is running');
+    res.send('🚀 Hero API is running (Development Mode - No Auth)');
 });
 
 // Global error handler

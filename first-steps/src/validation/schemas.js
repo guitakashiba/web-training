@@ -1,11 +1,6 @@
 const Joi = require('joi');
 
-exports.registerSchema = Joi.object({
-    email: Joi.string().email().required(),
-    password: Joi.string().min(6).required
-});
-
-exports.loginSchema = exports.registerSchema;
+// Removido: registerSchema e loginSchema
 
 exports.heroCreateSchema = Joi.object({
     name: Joi.string().min(2).required(),

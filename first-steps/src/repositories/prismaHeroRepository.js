@@ -1,39 +1,40 @@
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-class PrismaHeroRepository{
-    // GET all heroes belonging to a specifc user
-    async findAllByUser(userId){
-        return prisma.hero.findMany({
-            where: { userId }
-        });
+class PrismaHeroRepository {
+    // GET todos os heróis (sem filtro de usuário)
+    async findAll() {
+        return prisma.hero.findMany();
     }
 
-    // GET a single hero by ID
-    async findOne(id){
+    // GET um herói específico por ID
+    async findOne(id) {
         return prisma.hero.findUnique({
             where: { id }
         });
     }
 
-    async create(data){
+    // CREATE novo herói
+    async create(data) {
         return prisma.hero.create({
             data
         });
     }
 
-    async update(id, newData){
+    // UPDATE herói existente
+    async update(id, newData) {
         return prisma.hero.update({
-            where: { id }, 
+            where: { id },
             data: newData
         });
     }
 
-    async delete(id){
+    // DELETE herói
+    async delete(id) {
         return prisma.hero.delete({
             where: { id }
         });
     }
 }
 
-module.exports = PrismaHeroRepository
+module.exports = PrismaHeroRepository;
